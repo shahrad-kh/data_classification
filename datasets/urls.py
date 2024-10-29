@@ -22,16 +22,16 @@ urlpatterns = [
 
     # Update instances by id
     path('UpdateDatasetByID/<int:pk>/', views.UpdateDatasetByIDAPIView.as_view(), name="update_dataset_by_id"),
-    path('UpdateTagByID/<int:pk>/', views.TagUpdateAPIView.as_view(), name="update_tag_by_id"),
-    path('UpdateTextByID/<int:pk>/', views.TextUpdateAPIView.as_view(), name="update_text_by_id"),
+    path('UpdateTagByID/<int:pk>/', views.UpdateTagByIDAPIView.as_view(), name="update_tag_by_id"),
+    path('UpdateTextByID/<int:pk>/', views.UpdateTextByIDAPIView.as_view(), name="update_text_by_id"),
 
     # Delete instances by id
     path('DeleteDatasetByID/<int:pk>/', views.DeleteDatasetByIDAPIView.as_view(), name="delete_dataset"),
-    path('DeleteTagByID/<int:pk>/', views.TagDestroyAPIView.as_view(), name="delete_tag"),
-    path('DeleteTextByID/<int:pk>/', views.TextDestroyAPIView.as_view(), name="delete_text"),
+    path('DeleteTagByID/<int:pk>/', views.DeleteTagByIDAPIView.as_view(), name="delete_tag"),
+    path('DeleteTextByID/<int:pk>/', views.DeleteTextByIDAPIView.as_view(), name="delete_text"),
 
     # Count number of Text labeld with unique tag by tag id
-    path('CountNumberOfTextLabeldByTagID/<int:pk>/', views.CountTextByTagAPIView.as_view(), name="dataset_count_text_by_tag"),
+    path('CountNumberOfTextLabeldByTagID/<int:pk>/', views.CountNumberOfTextLabeldByTagIDAPIView.as_view(), name="dataset_count_text_by_tag"),
     
     # full text search within text
     path('FullTextSearchWithinText/<str:dataset_name>/<slug:search_string>/', views.TextSearchAPIView.as_view(), name='full_tex_search'),

@@ -102,7 +102,7 @@ class GetDetailOfTagByIDAPIView(RetrieveAPIView):
     serializer_class = TagSerializer
 
 
-class TagUpdateAPIView(UpdateAPIView):
+class UpdateTagByIDAPIView(UpdateAPIView):
     """
     Update Tag fields by id
     """
@@ -111,7 +111,7 @@ class TagUpdateAPIView(UpdateAPIView):
     serializer_class = TagSerializer
 
 
-class TagDestroyAPIView(DestroyAPIView):
+class DeleteTagByIDAPIView(DestroyAPIView):
     """
     Destroy Tag by id
     """
@@ -163,7 +163,7 @@ class GetDetailOfTextByIDAPIView(RetrieveAPIView):
     serializer_class = TextSerializer
     
     
-class TextUpdateAPIView(UpdateAPIView):
+class UpdateTextByIDAPIView(UpdateAPIView):
     """
     Update Text fields by id
     """
@@ -172,7 +172,7 @@ class TextUpdateAPIView(UpdateAPIView):
     serializer_class = TextSerializer
     
 
-class TextDestroyAPIView(DestroyAPIView):
+class DeleteTextByIDAPIView(DestroyAPIView):
     """
     Destroy Text by id
     """
@@ -181,7 +181,7 @@ class TextDestroyAPIView(DestroyAPIView):
     serializer_class = TextSerializer
     
 
-class CountTextByTagAPIView(APIView):
+class CountNumberOfTextLabeldByTagIDAPIView(APIView):
     """
     Displays number of text labeld with unique Tag
     """
