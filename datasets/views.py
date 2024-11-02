@@ -1,5 +1,6 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import (CreateAPIView, DestroyAPIView,
@@ -9,11 +10,12 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Dataset, Tag, Text
+from .exceptions import InactiveTagException
+from .models import Dataset, Log, Tag, Text
 from .permissions import (IsAdminOrCanEditLimitedFields,
                           IsAdminOrHasDatasetAccess)
 from .serializers import DatasetSerializer, TagSerializer, TextSerializer
-from .exceptions import InactiveTagException
+
 
 class CreateDatasetAPIView(CreateAPIView):
     """
@@ -215,7 +217,6 @@ class UpdateTextByIDAPIView(UpdateAPIView):
         
         if is_operator:
             raise PermissionDenied("You don't have permission to do this action")
-        print(request.data)
         
         serializer = self.get_serializer(text_instance, data=request.data)
         
@@ -255,6 +256,17 @@ class UpdateTextByIDAPIView(UpdateAPIView):
         # Validate and save the data
         if serializer.is_valid():
             serializer.save()
+            
+            # Create a log entry for the operator's action
+            action_description = f"Updated 'tags' field to {limited_data}"
+            Log.objects.create(
+                user=user,
+                text_instance=text_instance,
+                action=action_description,
+                datetime=timezone.now()
+            )
+            
+            
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

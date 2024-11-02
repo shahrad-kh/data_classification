@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
-# Create your models here.
 
 class Dataset(models.Model):
     name = models.CharField(max_length=255)
@@ -28,3 +29,14 @@ class Text(models.Model):
 
     def __str__(self):
         return f"Text: {self.content[:50]}..."
+
+
+class Log(models.Model):
+    
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    text_instance = models.OneToOneField(Text, on_delete=models.CASCADE)
+    action = models.TextField(max_length=300, blank=False, null=False)
+    datetime = models.DateTimeField(default=timezone.now, blank=False, null=False)
+
+    def __str__(self):
+        return f"{self.user} - {self.user.profile.role} {self.action} on {self.text_instance} at {self.datetime}"
