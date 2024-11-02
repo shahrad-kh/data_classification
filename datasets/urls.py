@@ -30,9 +30,9 @@ urlpatterns = [
     path('DeleteTagByID/<int:pk>/', views.DeleteTagByIDAPIView.as_view(), name="delete_tag"),
     path('DeleteTextByID/<int:pk>/', views.DeleteTextByIDAPIView.as_view(), name="delete_text"),
 
-    # Count number of Text labeld with unique tag by tag id
-    path('CountNumberOfTextLabeldByTagID/<int:pk>/', views.CountNumberOfTextLabeldByTagIDAPIView.as_view(), name="dataset_count_text_by_tag"),
+    # Count number of Text labeld with unique tag by dataset id
+    path('CountNumberOfTextLabeldByTagUsingDatasetID/<int:pk>/', views.CountNumberOfTextLabeldByTagUsingDatasetIDAPIView.as_view(), name="dataset_count_text_by_tag"),
     
     # full text search within text
-    path('FullTextSearchWithinText/<str:dataset_name>/<slug:search_string>/', views.TextSearchAPIView.as_view(), name='full_tex_search'),
+    path('FullTextSearchWithinTextsInDatasetByDatasetID/<int:pk>/<str:search_string>/', views.FullTextSearchWithinTextsInDatasetByDatasetIDAPIView.as_view(), name='full_tex_search'),
 ]

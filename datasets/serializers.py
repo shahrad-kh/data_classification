@@ -1,4 +1,7 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+
+from .exceptions import InactiveTagException
 from .models import Dataset, Tag, Text
 
 
@@ -20,3 +23,11 @@ class TextSerializer(serializers.ModelSerializer):
         model = Text
         fields = ['id', 'content', 'dataset', 'tags']
         read_only_fields = ['dataset']
+        
+    def validate_tags(self, tags):
+        # Iterate over each tag ID to check if the tag is active
+        for tag in tags:
+            if not tag.is_active:
+                raise InactiveTagException(tag)
+            
+        return tags
