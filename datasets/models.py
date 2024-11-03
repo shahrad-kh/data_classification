@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils import timezone
+from datetime import datetime
 
 
 class Dataset(models.Model):
@@ -33,10 +33,13 @@ class Text(models.Model):
 
 class Log(models.Model):
     
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text_instance = models.OneToOneField(Text, on_delete=models.CASCADE)
-    action = models.TextField(max_length=300, blank=False, null=False)
-    datetime = models.DateTimeField(default=timezone.now, blank=False, null=False)
+    action = models.TextField(max_length=20, blank=False, null=False, default="update")
+    updated_field = models.TextField(max_length=10, blank=False, null=False, default="tags")
+    action_details = models.TextField(max_length=300, blank=False, null=False, default="update")
+    datetime = models.DateTimeField(default=datetime.now, blank=False, null=False)
+
 
     def __str__(self):
         return f"{self.user} - {self.user.profile.role} {self.action} on {self.text_instance} at {self.datetime}"

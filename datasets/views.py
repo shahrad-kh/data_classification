@@ -15,6 +15,7 @@ from .models import Dataset, Log, Tag, Text
 from .permissions import (IsAdminOrCanEditLimitedFields,
                           IsAdminOrHasDatasetAccess)
 from .serializers import DatasetSerializer, TagSerializer, TextSerializer
+from datetime import datetime
 
 
 class CreateDatasetAPIView(CreateAPIView):
@@ -262,8 +263,10 @@ class UpdateTextByIDAPIView(UpdateAPIView):
             Log.objects.create(
                 user=user,
                 text_instance=text_instance,
-                action=action_description,
-                datetime=timezone.now()
+                action="update",
+                updated_field="tags",
+                action_details=action_description,
+                datetime=datetime.now()
             )
             
             
@@ -322,7 +325,7 @@ class FullTextSearchWithinTextsInDatasetByDatasetIDAPIView(APIView):
 
         # Filter texts that belong to this dataset and contain the search string
         texts = Text.objects.filter(dataset=dataset).filter(
-            Q(content__icontains=search_string)  # Adjust 'content' to your actual field name
+            Q(content__icontains=search_string)
         )
 
         # Serialize the results
