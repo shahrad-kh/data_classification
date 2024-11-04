@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'django_celery_beat',
+    'drf_yasg',
     
     'datasets.apps.DatasetsConfig',
     'account.apps.AccountConfig',
@@ -135,3 +136,12 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 
 # Configure Celery Beat scheduler
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Basic': {
+            'type': 'basic'
+        }
+    }
+}

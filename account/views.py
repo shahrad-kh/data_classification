@@ -11,7 +11,11 @@ from .serializers import (OperatorCreateSerializer,
 
 
 class CreateOperatorAPIView(APIView):
+    """
+    Create new operator: needs admin user permission
+    """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
+
 
     def post(self, request):
         serializer = OperatorCreateSerializer(data=request.data)
@@ -25,6 +29,11 @@ class CreateOperatorAPIView(APIView):
     
 
 class LoginAPIView(APIView):
+    """
+    Login users
+    """
+    
+    
     def post(self, request):
         # Extract username and password from the request data
         username = request.data.get('username')
@@ -40,7 +49,12 @@ class LoginAPIView(APIView):
 
 
 class LogoutAPIView(APIView):
+    """
+    Logout users
+    """
+    
     permission_classes = [IsAuthenticated]  # Only allow authenticated users to log out
+
 
     def get(self, request):
         logout(request)
@@ -48,12 +62,18 @@ class LogoutAPIView(APIView):
 
 
 class UpdateOperatorAvailableDatasetsAPIView(APIView):
+    """
+    Edit and Update operators available datasets: needs admin user permissions
+    """
+    
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
+
 
     def put(self, request, pk):
         try:
             # Retrieve the profile using the primary key
             profile = Profile.objects.get(pk=pk)
+            
         except Profile.DoesNotExist:
             return Response({'error': 'Profile not found'}, status=status.HTTP_404_NOT_FOUND)
 

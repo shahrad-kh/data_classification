@@ -115,7 +115,7 @@ class GetListOfTagsOfDatasetByDatasetIDAPIView(APIView):
     
 class GetDetailOfTagByIDAPIView(RetrieveAPIView):
     """
-    Displays Tag details by id
+    Displays Tag details by tag id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -125,7 +125,7 @@ class GetDetailOfTagByIDAPIView(RetrieveAPIView):
 
 class UpdateTagByIDAPIView(UpdateAPIView):
     """
-    Update Tag fields by id
+    Update Tag fields by tag id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -135,7 +135,7 @@ class UpdateTagByIDAPIView(UpdateAPIView):
 
 class DeleteTagByIDAPIView(DestroyAPIView):
     """
-    Destroy Tag by id
+    Destroy Tag by tag id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -185,7 +185,7 @@ class GetListOfTextsOfDatasetByDatasetIDAPIView(APIView):
 
 class GetDetailOfTextByIDAPIView(RetrieveAPIView):
     """
-    Displays Text details by id
+    Displays Text details by text id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -280,7 +280,7 @@ class UpdateTextByIDAPIView(UpdateAPIView):
 
 class DeleteTextByIDAPIView(DestroyAPIView):
     """
-    Destroy Text by id
+    Destroy Text by text id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
