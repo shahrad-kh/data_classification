@@ -25,6 +25,11 @@ from .serializers import (DatasetSerializer, FileUploadSerializer,
 class CreateDatasetAPIView(CreateAPIView):
     """
     Create new Dataset
+    
+    headers: 
+    Content-Type: application/json,
+    X-CSRFToken : your-csrf-token
+    
     fields:
     name,
     description (could be blank)
@@ -79,6 +84,11 @@ class DeleteDatasetByIDAPIView(DestroyAPIView):
 class CreateTagForDatasetByDatasetIDAPIView(APIView):
     """
     Create new Tag for specific Dataset by dataset id
+    
+    headers: 
+    Content-Type: application/json,
+    X-CSRFToken : your-csrf-token
+    
     fields:
     name,
     description (could be blank),
@@ -157,6 +167,11 @@ class DeleteTagByIDAPIView(DestroyAPIView):
 class CreateTextForDatasetByDatasetIDAPIView(APIView):
     """
     Create new Text for specific Dataset by dataset id
+    
+    headers: 
+    Content-Type: application/json,
+    X-CSRFToken : your-csrf-token
+    
     fields:
     content,
     tags: list of tags IDs
@@ -212,6 +227,11 @@ class UpdateTextByIDAPIView(UpdateAPIView):
     API view to update a Text instance based on user role permissions.
     - Admins can update all fields of the Text instance.
     - Operators can only update `tags` field if they have access to the dataset.
+    
+    headers: 
+    Content-Type: application/json,
+    X-CSRFToken : your-csrf-token
+    
     fields:
     content,
     dataset
@@ -361,6 +381,11 @@ class FullTextSearchWithinTextsInDatasetByDatasetIDAPIView(APIView):
 class UploadCSVFileCreateAPIView(CreateAPIView):
     """
     Upload file to import data from csv file to database
+    
+    headers: 
+    Content-Type: application/json,
+    X-CSRFToken : your-csrf-token
+    
     fields:
     file (just .csv file)
     """
@@ -419,7 +444,6 @@ class UploadCSVFileCreateAPIView(CreateAPIView):
 
                         tag_objects.append(tag)
                         
-                    print(tag_objects)
                     # Step 5: Check if a Text instance already exists for the same dataset and content
                     text_instance, created = Text.objects.update_or_create(
                         content=text_content,

@@ -1,6 +1,7 @@
+import json
+
 from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
-from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,6 +14,11 @@ from .serializers import (OperatorCreateSerializer,
 class CreateOperatorAPIView(APIView):
     """
     Create new operator: needs admin user permission
+    
+    headers: 
+    Content-Type: application/json,
+    X-CSRFToken : your-csrf-token
+    
     fields: 
     username, 
     password, 
@@ -36,14 +42,23 @@ class CreateOperatorAPIView(APIView):
 class LoginAPIView(APIView):
     """
     Login users
-    fields: username, password
+    fields: 
+    username, 
+    password
     """
     
     
     def post(self, request):
-        # Extract username and password from the request data
-        username = request.data.get('username')
-        password = request.data.get('password')
+        # Parse JSON if nested under '_content' due to incorrect parsing
+        if '_content' in request.data:
+            data = json.loads(request.data['_content'])
+            username = data.get('username')
+            password = data.get('password')
+            
+        else:
+            # Regular JSON parsing
+            username = request.data.get('username')
+            password = request.data.get('password')
 
         # Authenticate user
         user = authenticate(request, username=username, password=password)
@@ -52,7 +67,6 @@ class LoginAPIView(APIView):
             return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
         
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
 
 class LogoutAPIView(APIView):
     """
@@ -70,6 +84,11 @@ class LogoutAPIView(APIView):
 class UpdateOperatorAvailableDatasetsAPIView(APIView):
     """
     Edit and Update operators available datasets: needs admin user permissions
+    
+    headers: 
+    Content-Type: application/json,
+    X-CSRFToken : your-csrf-token
+    
     fields: 
     available_datasets: list of IDs
     """
