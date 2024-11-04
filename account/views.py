@@ -13,6 +13,11 @@ from .serializers import (OperatorCreateSerializer,
 class CreateOperatorAPIView(APIView):
     """
     Create new operator: needs admin user permission
+    fields: 
+    username, 
+    password, 
+    role: admin - operator (default=operator), 
+    available_datasets: list of IDs (could be blank)
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -31,6 +36,7 @@ class CreateOperatorAPIView(APIView):
 class LoginAPIView(APIView):
     """
     Login users
+    fields: username, password
     """
     
     
@@ -64,6 +70,8 @@ class LogoutAPIView(APIView):
 class UpdateOperatorAvailableDatasetsAPIView(APIView):
     """
     Edit and Update operators available datasets: needs admin user permissions
+    fields: 
+    available_datasets: list of IDs
     """
     
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access

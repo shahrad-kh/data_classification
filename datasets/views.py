@@ -25,6 +25,9 @@ from .serializers import (DatasetSerializer, FileUploadSerializer,
 class CreateDatasetAPIView(CreateAPIView):
     """
     Create new Dataset
+    fields:
+    name,
+    description (could be blank)
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -45,7 +48,7 @@ class GetListOfDatasetsAPIView(ListAPIView):
 
 class GetDetailOfDatasetByIDAPIView(RetrieveAPIView):
     """
-    Displays Dataset details by id
+    Displays Dataset details by dataset id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
     
@@ -55,7 +58,7 @@ class GetDetailOfDatasetByIDAPIView(RetrieveAPIView):
 
 class UpdateDatasetByIDAPIView(UpdateAPIView):
     """
-    Update Dataset fields by id
+    Update Dataset fields by dataset id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
     
@@ -65,7 +68,7 @@ class UpdateDatasetByIDAPIView(UpdateAPIView):
 
 class DeleteDatasetByIDAPIView(DestroyAPIView):
     """
-    Destroy Dataset by id
+    Destroy Dataset by dataset id
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
     
@@ -75,7 +78,11 @@ class DeleteDatasetByIDAPIView(DestroyAPIView):
 
 class CreateTagForDatasetByDatasetIDAPIView(APIView):
     """
-    Create new Tag for specific Dataset by Dataset ID
+    Create new Tag for specific Dataset by dataset id
+    fields:
+    name,
+    description (could be blank),
+    is_active (default=True)
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -97,7 +104,7 @@ class CreateTagForDatasetByDatasetIDAPIView(APIView):
 
 class GetListOfTagsOfDatasetByDatasetIDAPIView(APIView):
     """
-    Displays all Tags of a Dataset by Dataset ID
+    Displays all Tags of a Dataset by dataset id
     """
     permission_classes = [IsAuthenticated, IsAdminOrHasDatasetAccess]
     
@@ -126,6 +133,10 @@ class GetDetailOfTagByIDAPIView(RetrieveAPIView):
 class UpdateTagByIDAPIView(UpdateAPIView):
     """
     Update Tag fields by tag id
+    name,
+    description (could be blank),
+    dataset,
+    is_active
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -145,7 +156,10 @@ class DeleteTagByIDAPIView(DestroyAPIView):
 
 class CreateTextForDatasetByDatasetIDAPIView(APIView):
     """
-    Create new Tag for specific Dataset by Dataset ID
+    Create new Text for specific Dataset by dataset id
+    fields:
+    content,
+    tags: list of tags IDs
     """
     permission_classes = [IsAuthenticated, IsAdminUser]  # Ensure only admins can access
 
@@ -167,7 +181,7 @@ class CreateTextForDatasetByDatasetIDAPIView(APIView):
 
 class GetListOfTextsOfDatasetByDatasetIDAPIView(APIView):
     """
-    Displays all Texts of a Dataset by Dataset ID
+    Displays all Texts of a Dataset by dataset id
     """
     permission_classes = [IsAuthenticated, IsAdminOrHasDatasetAccess]
     
@@ -198,6 +212,10 @@ class UpdateTextByIDAPIView(UpdateAPIView):
     API view to update a Text instance based on user role permissions.
     - Admins can update all fields of the Text instance.
     - Operators can only update `tags` field if they have access to the dataset.
+    fields:
+    content,
+    dataset
+    tags: list of tags IDs
     """
 
     permission_classes = [IsAuthenticated, IsAdminOrCanEditLimitedFields]
@@ -234,7 +252,8 @@ class UpdateTextByIDAPIView(UpdateAPIView):
 
     def patch(self, request, *args, **kwargs):
         """
-        Handle full updates for a Text instance.
+        Handle full updates for a Text instance by admins.
+        operators can update only the tags field.
         """
         
         # Retrieve the Text instance
@@ -290,9 +309,10 @@ class DeleteTextByIDAPIView(DestroyAPIView):
 
 class CountNumberOfTextLabeldByTagUsingDatasetIDAPIView(APIView):
     """
-    Displays number of text labeld with unique Tag in specific Dataset
+    Displays number of text labeld with unique Tag in specific Dataset by dataset id
     """
     permission_classes = [IsAuthenticated, IsAdminOrHasDatasetAccess]
+    
     
     def get(self, request, pk):
         try:
@@ -319,9 +339,10 @@ class CountNumberOfTextLabeldByTagUsingDatasetIDAPIView(APIView):
 
 class FullTextSearchWithinTextsInDatasetByDatasetIDAPIView(APIView):
     """
-    Search for texts within a specific dataset based on a query string.
+    Search for texts within a specific dataset by dataset id based on a query string.
     """
     permission_classes = [IsAuthenticated, IsAdminOrHasDatasetAccess]
+    
     
     def get(self, request, pk, search_string):
         # Get the dataset by name or return 404 if it does not exist
@@ -340,12 +361,15 @@ class FullTextSearchWithinTextsInDatasetByDatasetIDAPIView(APIView):
 class UploadCSVFileCreateAPIView(CreateAPIView):
     """
     Upload file to import data from csv file to database
+    fields:
+    file (just .csv file)
     """
     permission_classes = [IsAuthenticated, IsAdminUser]
     serializer_class = FileUploadSerializer
     
+    
     def post(self, request):
-        print("start..")
+        
         # Step 1: Validate the file input
         serializer = FileUploadSerializer(data=request.data)
         
@@ -373,7 +397,7 @@ class UploadCSVFileCreateAPIView(CreateAPIView):
 
                     # Step 3: Get or create the Dataset instance
                     dataset, created = Dataset.objects.get_or_create(name=dataset_name)
-                    print("database created")
+                    
                     # Step 4: Get or create the Tag instances for this Dataset
                     tag_objects = []
                     for tag_name in tags_names:
