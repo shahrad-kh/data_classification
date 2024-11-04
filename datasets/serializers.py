@@ -31,3 +31,15 @@ class TextSerializer(serializers.ModelSerializer):
                 raise InactiveTagException(tag)
             
         return tags
+
+
+class FileUploadSerializer(serializers.Serializer):
+    file = serializers.FileField()
+
+
+    def validate_file(self, value):
+        # Ensure the file has a .csv extension
+        if not value.name.endswith('.csv'):
+            raise serializers.ValidationError("Uploaded file must be a CSV.")
+        
+        return value

@@ -1,3 +1,7 @@
+import csv
+from datetime import datetime
+
+from django.db import transaction
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -14,8 +18,8 @@ from .exceptions import InactiveTagException
 from .models import Dataset, Log, Tag, Text
 from .permissions import (IsAdminOrCanEditLimitedFields,
                           IsAdminOrHasDatasetAccess)
-from .serializers import DatasetSerializer, TagSerializer, TextSerializer
-from datetime import datetime
+from .serializers import (DatasetSerializer, FileUploadSerializer,
+                          TagSerializer, TextSerializer)
 
 
 class CreateDatasetAPIView(CreateAPIView):
@@ -331,3 +335,80 @@ class FullTextSearchWithinTextsInDatasetByDatasetIDAPIView(APIView):
         # Serialize the results
         serializer = TextSerializer(texts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
+class UploadCSVFileCreateAPIView(CreateAPIView):
+    """
+    Upload file to import data from csv file to database
+    """
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    serializer_class = FileUploadSerializer
+    
+    def post(self, request):
+        print("start..")
+        # Step 1: Validate the file input
+        serializer = FileUploadSerializer(data=request.data)
+        
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        file = serializer.validated_data['file']
+
+        try:
+            # Step 2: Process the CSV data
+            csv_reader = csv.DictReader(file.read().decode('utf-8').splitlines())
+
+            with transaction.atomic():  # Ensure all-or-nothing on database actions
+                for row in csv_reader:
+                    # Extract fields from CSV row
+                    dataset_name = row.get('dataset_name')
+                    tags_names = row.get('tags_name', '').split(' ')
+                    text_content = row.get('text_content')
+
+                    if not dataset_name or not text_content:
+                        return Response(
+                            {"error": "Each row must contain 'dataset_name' and 'text_content'."},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+
+                    # Step 3: Get or create the Dataset instance
+                    dataset, created = Dataset.objects.get_or_create(name=dataset_name)
+                    print("database created")
+                    # Step 4: Get or create the Tag instances for this Dataset
+                    tag_objects = []
+                    for tag_name in tags_names:
+                        tag_name = tag_name.strip()
+                        
+                        if tag_name:
+                            tag, created = Tag.objects.get_or_create(
+                            name=tag_name,
+                            dataset=dataset,  # Ensure the tag is associated with the current dataset
+                            defaults={'dataset': dataset}
+                            )
+
+                            # If tag already exists with a different dataset, raise an error
+                            if not created and tag.dataset != dataset:
+                                return Response(
+                                    {"error": f"Tag '{tag_name}' is already associated with another dataset."},
+                                    status=status.HTTP_400_BAD_REQUEST
+                                )
+
+                        tag_objects.append(tag)
+                        
+                    print(tag_objects)
+                    # Step 5: Check if a Text instance already exists for the same dataset and content
+                    text_instance, created = Text.objects.update_or_create(
+                        content=text_content,
+                        dataset=dataset,
+                    )
+
+                    # Step 6: Associate tags with the Text instance
+                    text_instance.tags.set(tag_objects)
+
+            return Response({"message": "File processed successfully"}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response(
+                {"error": f"An error occurred while processing the file: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

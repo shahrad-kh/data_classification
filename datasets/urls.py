@@ -35,4 +35,7 @@ urlpatterns = [
     
     # full text search within text
     path('FullTextSearchWithinTextsInDatasetByDatasetID/<int:pk>/<str:search_string>/', views.FullTextSearchWithinTextsInDatasetByDatasetIDAPIView.as_view(), name='full_tex_search'),
+
+    # Upload csv file to import data from file to dataset
+    path('UploadCSVFile/', views.UploadCSVFileCreateAPIView.as_view(), name='upload_csv_file'),
 ]
